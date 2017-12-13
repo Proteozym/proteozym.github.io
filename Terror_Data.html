@@ -313,7 +313,7 @@ d3.csv("produkt_klima_tag_19540601_20161231_03379.csv")
         .y(function(d){ return y1(d.value); })
         console.log($("#btnDetail").is(":checked"));
 
-    // Prefill detail weather with first value 
+    // Prefil detail weather with first value 
     inititateWeatherDetail(1985, filtered);
    
     chartGroup.append("path")
@@ -327,11 +327,11 @@ d3.csv("produkt_klima_tag_19540601_20161231_03379.csv")
         .attr("class","axis weather y")
         .call(yAxis1);
 
-    var focus = chartGroup.append("g")
-    .attr("class", "focus")
-    .style("display", "none");
+    /*var focus = chartGroup.append("g")
+        .attr("class", "focus")
+        .style("display", "none");
 
-    /* focus.append("line")
+     focus.append("line")
         .attr("class", "x-hover-line hover-line")
         .attr("y1", 0)
         .attr("y2", height);
