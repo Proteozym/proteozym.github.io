@@ -22,7 +22,10 @@
 </html>-->
 
 <!DOCTYPE html>
-
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQ3OKkZtbvfeAV444UYoCTz_DZKTbRmCs" type="text/javascript"></script>
+<script type="text/javascript" src="https://viralpatel.net/blogs/demo/jquery/jquery.shorten.1.0.js"></script>
+<!--<script src="https://maps.googleapis.com/maps/api/js?v=3.11&sensor=false" type="text/javascript"></script>-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/22CA4304-2DAB-B842-AC48-2E6DE58CE748/main.js" charset="UTF-8"></script><link rel="stylesheet" crossorigin="anonymous" href="https://gc.kis.v2.scr.kaspersky-labs.com/847EC85ED6E2-84CA-248B-BAD2-4034AC22/abn/main.css"/><script src="https://d3js.org/d3.v4.min.js"></script>
 <style>
@@ -33,34 +36,180 @@
 		    height: 100%;
 		    width: 100%;
 
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: 'RobotoDraft', 'Roboto', 'Helvetica Neue, Helvetica, Arial', sans-serif;
+            font-style: normal;
+            font-weight: 300;
+            font-size: 1.4rem;
+            line-height: 2rem;
+            letter-spacing: 0.01rem;
+            color: #212121;
+            background-color: #f5f5f5;          
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
 	    }
+
+/* Site Layout*/        
+        #svg {
+            margin-top: 30px;
+            min-height: 500px;
+            width: 70%;
+        }
+
+        #map {
+            float: left; 
+            width: 512px;
+            height: 512px;
+        }
+        #map_container {            
+            display: inline-block;
+            margin-left: 30px;
+            width: 43%;
+            
+        }
+        #main_map {
+            background-color: rgb(255, 255, 255);
+            box-shadow: 0 3px 5px 0 rgba(0,0,0,0.2);   
+            width: 98%;
+            margin: 0 auto;
+            margin-bottom: 20px;                  
+        }
+
+        #main_map div {
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        #main_map h1 {
+            margin-top:0;
+        }
+
+        #terror_list {
+            color: #333; 
+            margin-right: 30px;
+            float:right;
+            padding: 0;                   
+            vertical-align: top;
+            width: 51%;
+            display: inline-block;
+
+        }
+        #terror_data {
+            padding: 20px 0 20px 0;
+            background-color: rgb(255, 255, 255);
+            box-shadow: 0 3px 5px 0 rgba(0,0,0,0.2);   
+            width: 98%;
+            margin: 0 auto; 
+            margin-bottom: 30px;
+        }
+        
+
+/* Text and graph formatting*/
+        h1 {
+            font-size: 1.1rem;            
+            line-height: 1.1rem;
+        }
+
+        .descr_terr {
+            font-size: 0.6rem;
+            line-height: 0.6rem;
+            margin-bottom: 10px;
+        }
 
 	    text {
 		    font-family: arial;
 		    font-size: 12px;
 	    }
 
-
 	    path.line {
 		    fill: none;
-		    stroke: pink;
+		    stroke: #e4521b;
 		    stroke-width: 3px;
 	    }
 
         path.line.b {
 		    fill: none;
-		    stroke: royalblue;
-		    stroke-width: 3px;
+		    stroke: #0c7d99;
+	
 	    }
+                
+        .weather path{
+            stroke: #0c7d99;
+            
+        }
+        .weather text {
+            fill: #0c7d99;
+        }
+        .bes  path{
+            stroke: #e4521b;
+        }
+        .bes  text {
+            fill: #e4521b;
+        }
+
+        .detailGraph .yDet path{
+            stroke: #0c7d99;
+            stroke-width: 2px;
+        }
+
+        .detailGraph .yDet text {
+            stroke: #0c7d99;
+        }
 
 		.axis path,
 		.axis line {
 		  fill: none;
-		  stroke: slategray;
 		  shape-rendering: crispEdges;
 		}
+        .content {
+            width: 80%;
+        }
 
+       
+        .axis {
+            font: 10px sans-serif;
+        }
+        
+        .axis path,
+        .axis line {
+          fill: none;          
+          stroke-width: 2px;
+          shape-rendering: crispEdges;
+        }
+        
+        .line {
+          fill: none;
+          stroke: #6F257F;
+          stroke-width: 5px;
+        }
+
+        .overlay {
+          fill: none;
+          /* pointer-events: all; */
+        }
+
+        #weatherDetail {
+            width: 30%;
+            height: 500px;
+           
+            float: right;
+        }
+
+        #weatherDetail svg {
+            min-height: 500px;
+            margin-top: 30px;
+            padding-left: 30px;
+        }
+
+        .circle_btn {
+            cursor: pointer;
+        }
+        .weatherLabel {
+            fill: darkblue;
+            font-weight: bold;
+        }
+
+/*Detail Table*/
         .divTable{
             display: table;
             width: 100%;
@@ -68,14 +217,20 @@
         .divTableRow {
             display: table-row;
         }
+
+        .divTableRow .divTableCell {
+            border-bottom: 1px solid #d6d6d6 ;          
+        }
+
         .divTableHeading {
-            background-color: #EEE;
             display: table-header-group;
         }
         .divTableCell, .divTableHead {
-            border: 1px solid #999999;
+            
             display: table-cell;
-            padding: 3px 10px;
+            padding: 3px 5px;
+            max-width: 200px;
+
         }
         .divTableHeading {
             background-color: #EEE;
@@ -90,50 +245,32 @@
         #divTableBody {
             display: table-row-group;
         }
-
-        .headtags {
-            font-weight: bold;
-            width: 50px;
-        }
-
-        #svg {
-            margin-top: 30px;
-            min-height: 500px;
-            width: 70%;
-        }
-
-        #terror_list {
-            margin-top: 30px;
-            margin-left: 30px;
-            width: 800px;
-            color: #333; 
-            padding: 0;                       
-        }
-
-        .axis {
-            font: 10px sans-serif;
+        .headtags {            
+            line-height: 17px;
+            font-size: 14px;
         }
         
-        .axis path,
-        .axis line {
-          fill: none;
-          stroke: #D4D8DA;
-          stroke-width: 2px;
-          shape-rendering: crispEdges;
+        .showmore {
+            line-height: 14px;
+            vertical-align: middle;
+            line-height: 1.2em;
+            font-size: 12px;
+            max-width: 145px;
+            padding: 1px;
+            /*Text Breaking*/
+            white-space: pre-wrap;      /* CSS3 */   
+            white-space: -moz-pre-wrap; /* Firefox */    
+            white-space: -pre-wrap;     /* Opera <7 */   
+            white-space: -o-pre-wrap;   /* Opera 7 */    
+            word-wrap: break-word;
         }
-        
-        .line {
-          fill: none;
-          stroke: #6F257F;
-          stroke-width: 5px;
+
+/* Interactivity*/        
+        .focus {
+            display: null;
         }
-        
-        .overlay {
-          fill: none;
-          pointer-events: all;
-        }
-        
-        .focus circle { 
+
+        .focus circle {
           fill: #F1F3F3;
           stroke: #6F257F;
           stroke-width: 5px;
@@ -145,20 +282,59 @@
           stroke-dasharray: 3,3;
         }
 
-        #weatherDetail {
-            width: 500px;
-            height: 500px;
-            float: right;
-        }
+        
 
     </style>
   </head>
+  <!-- HTML Site Structure -->
   <body>
-    <a href="Terror_Data.html">Terror Data Detail</a>
-    <div id="weatherDetail">
+    <div id="main_map">       
+        <div style="padding: 20px;">
+            <div style="width: 70%;">
+                <h1>Oktoberfest Visitor Comparison Graph:</h1>
+                <div class="descr_terr">Shows the avg amount of rain during the "oktoberfest-period" and the amount "significant" terror incidents for the specific year</div>
+            </div>            
+            <div>
+                <div>
+                    <h1>Weather Detail Graph:</h1>
+                    <div class="descr_terr">Shows the daily amount of rain during the "oktoberfest-period" for the selected year</div> 
+                </div>
+            </div>
+            <svg id="svg"></svg>                            
+            <div id="weatherDetail"></div>
+            <div><img style="margin-left: 50px;" alt="Graph Legend" src="/InfoVis/img/legend.png"></div>
+        </div>
     </div>
+    <div id="terror_data">
+        <div id="map_container">
+            <h1>Location Of Terror Attacks:</h1>
+            <div id="map_canvas" style="width: 800px; height:500px;"></div>
+        </div>            
+        <div id="terror_list">
+            <h1>Terror Data Details:</h1>
+            <div class="descr_terr">(click on Bar in graph to display information | hover over <span style="text-decoration: underline dotted">underlined</span> text to see full description!)</div>   
+            <div id="divTableBody">
+                <div class="divTableRow">
+                    <div class="divTableCell headtags">Date</div>
+                    <div class="divTableCell headtags">Country</div>
+                    <div class="divTableCell headtags">Region</div>
+                    <div class="divTableCell headtags">City</div>                        
+                    <div class="divTableCell headtags">Target</div>
+                    <div class="divTableCell headtags">Group Name</div>
+                    <div class="divTableCell headtags">Motive</div>
+                    <div class="divTableCell headtags">Type of Weapon</div>
+                    <div class="divTableCell headtags">Killed</div>
+                    <div class="divTableCell headtags">Wounded</div>
+                    <div class="divTableCell headtags">Additional Note</div>
+                </div>
+            </div>     
+        </div>
+    </div>
+</body>
+  
 <script type="text/javascript">
 
+/*Date and time Formatting + Parsing*/
 var parseDate = d3.timeParse("%Y");
 var parseDate2 = d3.timeParse("%Y%m%d");
 var parseDateSlash = d3.timeParse("%Y/%m/%d");
@@ -167,20 +343,18 @@ var yearFormat = d3.timeFormat("%Y");
 var monthFormat = d3.timeFormat("%m");
 var monthDayFormat = d3.timeFormat("%m%d");
 var fullFormat = d3.timeFormat("%d/%m/%Y");
+var dayDayMonth = d3.timeFormat("%d-%b-%y");
 
+
+/*SVG initiation*/
+
+/*(Initital) dimension setting*/
 var margin = {left: 50, right: 20, top: 20, bottom: 50 };
-
 var width = 1200 - margin.left - margin.right;
 var height = 500 - margin.top - margin.bottom;
-
-
 var max = 0;
-
 var xNudge = 50;
 var yNudge = 20;
-
-
-
 
 minDate = new Date();
 minDate.setFullYear(1984);
@@ -190,59 +364,77 @@ var x = d3.scaleTime()
                 .domain([minDate, maxDate])
                 .range([0,width]);
                 
-
 var xAxis = d3.axisBottom(x)
                 .scale(x)
                 .tickFormat(d3.timeFormat("%Y"))
                 .ticks(d3.timeYear);
 
+/*svg: main graph*/
+var svg = d3.select("#svg");
 
-var svg = d3.select("body").append("svg").attr("id","svg");
 var chartGroup = svg.append("g").attr("class","chartGroup").attr("transform","translate("+xNudge+","+yNudge+")");             
 
 chartGroup.append("g")
         .attr("class","axis x")
-        .attr("transform","translate(0,"+height+")")        
-        .call(xAxis);   
+        .attr("transform","translate(0,"+height+")")                
+        .call(xAxis);
+chartGroup.append("text")
+        .attr("x", width / 2 )
+        .attr("y",  height + margin.top + 20)
+        .text("Year");   
 
-/* MOUSEOVER DETAIL WEATHER GRAPH */
-
+/*Settings for the detail weather graph*/
 var marginD = {top: 20, right: 20, bottom: 30, left: 30},
 widthD = 500 - marginD.left - marginD.right,
 heightD = 500 - marginD.top - marginD.bottom;
 
-// set the ranges
+// set the date ranges
+minDateWeather = new Date("09 20 1985");
 
-minDateWeather = new Date("09 20");
-
-maxDateWeather = new Date("10 10");
+maxDateWeather = new Date("10 10 1985");
 
 var xD = d3.scaleTime().range([0, widthD]).domain([minDateWeather, maxDateWeather]);
 var yD = d3.scaleLinear().range([heightD, 0]);
 
 var xAxisD = d3.axisBottom(xD)
                 .scale(xD)
-                .tickFormat(d3.timeFormat("%d"))
+                .tickFormat(d3.timeFormat("%a-%d-%b"))
                 .ticks(21);
 
 var yAxisD = d3.axisLeft(yD);
 
+/*svg2: detail weather graph*/
 var svg2 = d3.select("#weatherDetail").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
+            .attr("width", "100%") 
+            .attr("height", height + margin.top + margin.bottom + 50)
         .append("g")
             .attr("class", "detailGraph")
-            .attr("transform",
-                "translate(" + margin.left + "," + margin.top + ")");
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-// Add the X Axis
-svg2.append("g")
-    .attr("transform", "translate(0," + heightD + ")")
-    .call(xAxisD);
 
-// Add the Y Axis
-svg2.append("g")
-    .call(yAxisD);
+// Initialize the Weather Detail Graph
+    // Add the X Axis
+    svg2.append("g")
+        .attr("transform", "translate(0," + heightD + ")")
+        .attr("class", "detailX")
+        .call(xAxisD)
+        .selectAll("text")	
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", "rotate(-90)");
+    
+
+    // Add the Y Axis
+    svg2.append("g")
+        .call(yAxisD);
+    svg2.append("text")
+        .attr("x", -140)
+        .attr("y",  -40)
+        .text("Niederschlagshoehe (mm)")
+        .attr("transform", "rotate(-90)");   
+
+////////////////////////////////////////////////
 
 function filteredWeather(data, key) {
    return data.filter(function (a) {    
@@ -250,25 +442,41 @@ function filteredWeather(data, key) {
     });
 };
 
-        
+/*Initiation of the Google Maps Graph*/
+var map;
+var markers = [];
 
+$(document).ready(function() {    
+     //Initialize map
+    // map options
+    var options = {
+        zoom: 2,        
+        center: new google.maps.LatLng(0, 0), 
+        mapTypeId: google.maps.MapTypeId.TERRAIN,
+        mapTypeControl: false
+    };
+    // init map
+    map = new google.maps.Map(document.getElementById('map_canvas'), options);
+    
+});
+
+
+/*Oktoberfest visitor Line-graph*/        
 d3.csv("oktoberfestbesucher19852016.csv")
 .row(function(d) { return { year: parseDate(d.jahr), besucherg: +d.besuchergesamt }})
 .get(function(error, rows) {
-    max = d3.max(rows, function(d) { return d.besucherg; });
 
+    //Scaling the Y-Axis and drawing the Line-graph
+    max = d3.max(rows, function(d) { return d.besucherg; });
     var y0 = d3.scaleLinear()
                 .domain([0,max])
                 .range([height,0]);
 
-    var yAxis0 = d3.axisLeft(y0);
-    
+    var yAxis0 = d3.axisLeft(y0);    
 
     var line = d3.line()
         .x(function(d){ return x(d.year); })
-        .y(function(d){ return y0(d.besucherg); })
-      
-        
+        .y(function(d){ return y0(d.besucherg); })            
 
     chartGroup.append("path")
         .attr("class","line")
@@ -277,33 +485,42 @@ d3.csv("oktoberfestbesucher19852016.csv")
 
     chartGroup.append("g")
         .attr("class","axis bes y")
-        .call(yAxis0);
+        .call(yAxis0);        
 
-
-        
+    chartGroup.append("text")
+        .attr("x", -128)
+        .attr("y",  -30)
+        .text("Visitors (avg. in million)")
+        .attr("transform", "rotate(-90)"); 
 });
 
+//Median rain during the Oktoberfest period Line-graph
 d3.csv("produkt_klima_tag_19540601_20161231_03379.csv")
 .row(function(d) { return { MESS_DATUM: parseDate2(d["MESS_DATUM"]), RSK: +d.RSK }})
 .get(function(error, rows) {
-    filtered = rows.filter(function (a) {        
+
+    //filtering the weather data for to the oktoberfest date-range
+    filteredWeatherData = rows.filter(function (a) {        
         return (monthDayFormat(a.MESS_DATUM) >= 0920 && monthDayFormat(a.MESS_DATUM) <= 1010); 
     });
     
+    //calculating the median amount of rain 
     var oktDataAVG = d3.nest()
     .key(function(d) { return yearFormat(d.MESS_DATUM);})
     .rollup(function(d) { 
         return d3.mean(d, function(g) {return g.RSK; });
-    }).entries(filtered);
+    }).entries(filteredWeatherData);
 
+    //Scaling the Y-Axis and drawing the Line-graph
     max = d3.max(oktDataAVG, function(d) { return d.value; });
     bisectDate = d3.bisector(function(d) { return d.key; }).left;
 
-    var y1 = d3.scaleLinear()
-                .domain([0,max])
-                .range([height,0]);
+    var y1 = d3.scaleLinear() 
+            .domain([0, max])
+            .range([height, 0]);
 
-    var yAxis1 = d3.axisRight(y1);
+    var yAxis1 = d3.axisRight() 
+                     .scale(y1);
 
     var line = d3.line()
         .x(function(d){ 
@@ -311,10 +528,9 @@ d3.csv("produkt_klima_tag_19540601_20161231_03379.csv")
             return x(time_key); 
         })
         .y(function(d){ return y1(d.value); })
-        console.log($("#btnDetail").is(":checked"));
 
-    // Prefill detail weather with first value 
-    inititateWeatherDetail(1985, filtered);
+    // Prefill detail weather graph with first value 
+    inititateWeatherDetail(1985, filteredWeatherData);
    
     chartGroup.append("path")
         .attr("class","line b")
@@ -324,207 +540,272 @@ d3.csv("produkt_klima_tag_19540601_20161231_03379.csv")
         .attr("fill", "none")
 
     chartGroup.append("g")
-        .attr("class","axis weather y")
-        .call(yAxis1);
+        .attr("class","axis weather y")        
+        .attr("transform", "translate(1133,0)")        
+        .call(d3.axisRight(y1));
+
+    chartGroup.append("text")
+        .attr("x", -185)
+        .attr("y", width + 30)
+        .text("Niederschlagshoehe (avg. in mm)")
+        .attr("transform", "rotate(-90)"); 
 
     var focus = chartGroup.append("g")
     .attr("class", "focus")
-    .style("display", "none");
+    .style("display", "null");
 
-    focus.append("line")
-        .attr("class", "x-hover-line hover-line")
-        .attr("y1", 0)
-        .attr("y2", height);
-
-  /*   focus.append("line")
-        .attr("class", "y-hover-line hover-line")
-        .attr("x1", width)
-        .attr("x2", width); */
-
-    focus.append("circle")
+    var circle = focus.append("circle")
+        .attr("class", "circle_btn")    
+        .attr("transform", "translate(33.40274538171016,428.0782122905028)")
         .attr("r", 7.5);
 
     focus.append("text")
-        .attr("x", 15)
-      	.attr("dy", ".31em");
+    .attr("class", "weatherLabel")
+    .attr("x", 48)
+    .attr("y", 428)
+    .text(0);
 
-    svg.append("rect")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-        .attr("class", "overlay")
-        .attr("width", width)
-        .attr("height", height)
-        
-            .on("mouseover", function() { focus.style("display", null); })
-            .on("mouseout", function() { focus.style("display", "none"); })
-            .on("mousemove", mousemove);
-
+    //Create the draggable circle to load the detail weather data
+    focus.call(d3.drag()
+            .on("start.interrupt", function() { circle.interrupt(); })
+            .on("start drag", mousemove));
+            
     function mousemove() {
-      var x0 = x.invert(d3.mouse(this)[0]),
+      var x0 = x.invert( d3.mouse(this)[0] ),
           i = bisectDate(oktDataAVG, yearFormat(x0), 1),          
           d0 = oktDataAVG[i - 1],
           d1 = oktDataAVG[i]
           d = x0 - d0.key > d1.key - x0 ? d1 : d0;
- 
-        focus.attr("transform", "translate(" + x(parseDate(d.key)) + "," + y1(d.value) + ")");
-        focus.select("text").text(function() { return d.key; });
-        focus.select(".x-hover-line").attr("y2", height - y1(d.value));
-        focus.select(".y-hover-line").attr("x2", width + width);
-      loadWeatherDetailGraph(d.key, filtered);
+         circle.attr("transform", "translate(" + x(parseDate(d.key)) + "," + y1(d.value) + ")"); 
+
+        focus.select("text")
+        .attr("x", x(parseDate(d.key))+15)
+        .attr("y", y1(d.value))
+        .text(function() { return d.value.toFixed(2);});
+
+      loadWeatherDetailGraph(d.key, filteredWeatherData);
     }    
 
-    function inititateWeatherDetail(key, data) {
-        var data = filteredWeather(data, key);
-        var valueline = d3.line()
-        .x(function(d) { return xD(d.MESS_DATUM); })
-        .y(function(d) { return yD(d.RSK); });
-        console.log(data);
-        svg2.append("path")
-            .attr("class", "line")
-            .attr("d", valueline(data));
-
-    }   
+    function hue(h) {
+        circle.attr("cx", x(h));
+        
+    }
 });
 
-
-
+//Creating the terror incident bar-graph
 d3.csv("terrorism/Terror_WesternEU+NAOceana_50+.csv")
-.row(function(d) {return { idate: parseDateSlash(d.idate), country_txt: d.country_txt, region_txt: d.region_txt, city: d.city, lat: d.latitude, long: d.longitude, attacktype: d.attacktype1, targettype: d.targtype1_txt, target: d.target1, gname: d.gname, motive: d.motive, weapontype: d.weaptype1_txt, killed: d.nkill, wounded: d.nwound, propvalue: d.propvalue, propcomment: d.propcomment, addnotes: d.addnotes}})
+.row(function(d) {return { idate: parseDateSlash(d.idate), country_txt: d.country_txt, region_txt: d.region_txt, city: d.city, lat: d.latitude, long: d.longitude, target: d.target1, gname: d.gname, motive: d.motive, weapontype: d.weaptype1_txt, killed: d.nkill, wounded: d.nwound, addnotes: d.addnotes}})
 .get(function(error, rows) {
+
+    //Filtering for dates before the end of the Oktoberfest
     filteredT = rows.filter(function (a) {        
         return (monthDayFormat(a.idate) <= 1010); 
     });
     
+    //Calculating the sum of terror incidents before the 10.10 
     var terrorDataSum = d3.nest()
     .key(function(d) { return yearFormat(d.idate);})
     .rollup(function(d) { 
         return d3.sum(d, function(g) {return 1;});
     }).entries(filteredT);
     
+    //Creating the bar graph
     var y2 = d3.scaleLinear()
-                .domain([0,max])
+                .domain([0,12])
                 .range([height,0]);
 
     var yAxis2 = d3.axisRight(y2);
-
+    
     var bar = chartGroup.selectAll("rect")            
     .data(terrorDataSum)
     .enter()
     .append('g')
-    bar.append('rect')            
-        .attr("x", function(d) {return x(parseDate(d.key)); })
+    bar.append('rect')  
+        .attr("style", "z-index: 1000; cursor: pointer")          
+        .attr("x", function(d) {return x(parseDate(d.key))-(6); })
         .attr("y", function(d) { return y2(d.value); })
         .attr("width", 15)
         .attr("height", function(d) { return height - y2(d.value); })
         .attr("fill", function(d) {
                 return "rgb(50,50,50)";
         })
+        //onclick function for the detail table and the map
         .on("click", function(d){
             displayTerrorData(d, filteredT);            
         })
-
+        .on("mousemove", function() {d3.event.stopImmediatePropagation();})
         bar.append("text")
         .text(function(d) {                 
                     return d.value;
         })
         .attr("text-anchor", "middle")
-        .attr("x", function(d) {return x(parseDate(d.key)); })
-        .attr("y", function(d) { return y2(d.value); })
-        .attr("font-family", "sans-serif")
-        .attr("font-size", "11px")
-        .attr("color", "red")              
+        .attr("x", function(d) {return x(parseDate(d.key))+1; })
+        .attr("y", function(d) { return y2(d.value)+20; })
+        .attr("font-size", "12px")
         .attr("z-index", 1000)              
-        .attr("fill", "red")
+        .attr("color", "#fff")
+        .attr("fill", "#fff");
 
 });
 
+//updates the detail table and the map
 function displayTerrorData(barData, dataset) {
+    
     list = $("#divTableBody");
-    console.log(list.find(".variable"));
+ 
     list.find(".variable").remove();
-    //filter the dataset by the barData
 
-    filtered = dataset.filter(function (a) {        
-        
+    //filter the dataset by the barData
+    filtered = dataset.filter(function (a) {                
         return (yearFormat(a.idate) == barData.key); 
     });
-    for (data of filtered) {
 
+    //load the GoogleMap to show the location of terror attacks
+    loadGoogleMap(filtered);
+    var excludeFields = ["lat", "long"];
+
+    for (data of filtered) {
         var row = $('<div class="divTableRow variable">');
         list.append(row);
-        
-
         Object.keys(data).forEach(function(key,index) {
             value = data[key];
             if (key == "idate") value = fullFormat(data[key]);
-            row.append("<div class='divTableCell "+key+"'>"+value+"</div>")
+            if (!excludeFields.includes(key)) {
+                row.append("<div class='divTableCell "+key+"'><div class='showmore'>"+value+"</div></div>")
+            }
         });            
         list.append("</div>");
-    } 
-    
-   
-    
+    }
+    cropDetails(); 
 }
 
+function cropDetails() {
+    //Allows for a hover detail view on long text in detail table
+    $(".showmore").each(function() {
+        var text = $(this).text();
+        if(text.length > 25) {            
+            textcut = text.substr(0,25) + ' ... ';
+            $(this).html('<abbr title="'+text+'">'+textcut+'</abbr>');            
+        }
+    });
+}
 
-function loadWeatherDetailGraph(key, data) {
+function inititateWeatherDetail(key, data) {
 
-    var data = filteredWeather(data, key);
-    // Scale the range of the data
+    var data = filteredWeather(data, key); 
     xD.domain(d3.extent(data, function(d) { return d.MESS_DATUM; }));
     yD.domain([0, d3.max(data, function(d) { return d.RSK; })]);
 
-    
-    // parse the date / time
-    var parseTime = d3.timeParse("%m");
+    var valueline = d3.line()
+    .x(function(d) { return xD(d.MESS_DATUM); })
+    .y(function(d) { return yD(d.RSK); });
 
+    svg2.append("path")
+        .attr("class", "line")
+        .attr("d", valueline(data));
+}   
+
+function loadWeatherDetailGraph(key, data) {
+   
+    var data = filteredWeather(data, key);
+        // Scale the range of the data
+    xD = xD.domain(d3.extent(data, function(d) { return d.MESS_DATUM; }));
+    
+    svg.select(".detailX")
+        .transition()
+        .call(xAxisD);
+
+    yD.domain([0, d3.max(data, function(d) { return d.RSK; })]);
+          
     // define the line
     var valueline = d3.line()
         .x(function(d) { return xD(d.MESS_DATUM); })
         .y(function(d) { return yD(d.RSK); });
         var svg2 = d3.select("#weatherDetail").transition();
+        
         // Make the changes
         svg2.select(".line")   // change the line
             .duration(150)
             .attr("d", valueline(data));
-            svg2.select(".x.axis") // change the x axis
+            svg2.select(".detailX") // change the x axis
             .duration(150)
-            .call(xAxisD);
+            .call(xAxisD)
+            .selectAll("text")	
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", "rotate(-90)"); 
+
             svg2.select(".y.axis") // change the y axis
             .duration(150)
-            .call(yAxisD);
-    
+            .call(yAxisD)
 
 
- 
 }
 
+function loadGoogleMap(geoData) {
+   
+    // set multiple markers
+    id = 0;
+    var infowindow = new google.maps.InfoWindow();
+
+    for (var i = 0; i < markers.length; i++) {        
+        markers[i].setMap(null);
+    }
+    markers = [];
+
+    for (data of geoData) {
+        
+        // init markers
+        var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(data['lat'], data['long']),
+            map: map,
+            id: id 
+        });
+        markers.push(marker);
+        
+        //String preperation for the info view when user clicks on marker
+        var contentString = '<div id="content">'+
+        '<div id="siteNotice">'+
+        '</div>'+
+        '<h1 id="firstHeading" class="firstHeading">'+data['city']+'</h1>'+
+        '<div id="bodyContent">'+
+            '<div id="divTableBody">'+
+                '<div class="divTableRow">'+
+                    '<div class="divTableCell headtags">Date</div><div class="divTableCell content">'+fullFormat(data['idate'])+'</div>'+
+                '</div>' +
+                '<div class="divTableRow">'+
+                    '<div class="divTableCell headtags">Country / Region</div><div class="divTableCell content">'+data['country_txt'] + ' / ' + data['region_txt'] +'</div>'+
+                '</div>' +
+                '<div class="divTableRow">'+
+                    '<div class="divTableCell headtags">Target</div><div class="divTableCell content">'+data['target']+'</div>'+
+                '</div>' +
+                '<div class="divTableRow">'+
+                    '<div class="divTableCell headtags">Group</div><div class="divTableCell content">'+data['group']+'</div>'+
+                '</div>' +
+                '<div class="divTableRow">'+
+                    '<div class="divTableCell headtags">Killed</div><div class="divTableCell content">'+data['killed']+'</div>'+
+                '</div>' +
+                '<div class="divTableRow">'+
+                    '<div class="divTableCell headtags">Wounded</div><div class="divTableCell content">'+data['wounded'] +'</div>'+
+                '</div>' +
+            '</div>'+
+            '</div>'+
+        '</div>';
+        
+        
+        marker.addListener('click', (function(marker, contentString, infowindow) {
+            return function() {
+                infowindow.setContent(contentString);
+                infowindow.open(map, marker);
+            };
+        })(marker, contentString, infowindow));
+        id++;
+    }
+
+
+}
 
 </script>
 
-   <!--  <div id="terror_list">
-        <span><h1>Terror Data Details:</h1></span>
-        <span>(click on Bar in graph to display information)</span>   
-        <div id="divTableBody">
-            <div class="divTableRow">
-                <div class="divTableCell headtags">Date</div>
-                <div class="divTableCell headtags">Country</div>
-                <div class="divTableCell headtags">Region</div>
-                <div class="divTableCell headtags">City</div>
-                <div class="divTableCell headtags">Latitude</div>
-                <div class="divTableCell headtags">Longitude</div>
-                <div class="divTableCell headtags">Type Of Attack</div>
-                <div class="divTableCell headtags">Type of Target</div>
-                <div class="divTableCell headtags">Target</div>
-                <div class="divTableCell headtags">Group Name</div>
-                <div class="divTableCell headtags">Motive</div>
-                <div class="divTableCell headtags">Type of Weapon</div>
-                <div class="divTableCell headtags">Killed</div>
-                <div class="divTableCell headtags">Wounded</div>
-                <div class="divTableCell headtags">Property Damage</div>
-                <div class="divTableCell headtags">Property Comment</div>
-                <div class="divTableCell headtags">Additional Note</div>
-            </div>
-        </div>     
-    </div> -->
-</body>
 
