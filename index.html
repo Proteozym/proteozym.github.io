@@ -22,16 +22,17 @@
 </html>-->
 
 <!DOCTYPE html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQ3OKkZtbvfeAV444UYoCTz_DZKTbRmCs" type="text/javascript"></script>
 <script type="text/javascript" src="https://viralpatel.net/blogs/demo/jquery/jquery.shorten.1.0.js"></script>
 <!--<script src="https://maps.googleapis.com/maps/api/js?v=3.11&sensor=false" type="text/javascript"></script>-->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
 <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/22CA4304-2DAB-B842-AC48-2E6DE58CE748/main.js" charset="UTF-8"></script><link rel="stylesheet" crossorigin="anonymous" href="https://gc.kis.v2.scr.kaspersky-labs.com/847EC85ED6E2-84CA-248B-BAD2-4034AC22/abn/main.css"/><script src="https://d3js.org/d3.v4.min.js"></script>
 <style>
 
 	    html, body {
 		    margin: 0;
-		    padding: 0; 
+		    padding: 0;
 		    height: 100%;
 		    width: 100%;
 
@@ -423,9 +424,10 @@ var svg2 = d3.select("#weatherDetail").append("svg")
             .attr("dy", ".15em")
             .attr("transform", "rotate(-90)");
     
-
+            
     // Add the Y Axis
     svg2.append("g")
+        .attr("class", "detailY")
         .call(yAxisD);
     svg2.append("text")
         .attr("x", -140)
@@ -692,6 +694,7 @@ function cropDetails() {
 function inititateWeatherDetail(key, data) {
 
     var data = filteredWeather(data, key); 
+    
     xD.domain(d3.extent(data, function(d) { return d.MESS_DATUM; }));
     yD.domain([0, d3.max(data, function(d) { return d.RSK; })]);
 
@@ -708,6 +711,7 @@ function loadWeatherDetailGraph(key, data) {
    
     var data = filteredWeather(data, key);
         // Scale the range of the data
+    
     xD = xD.domain(d3.extent(data, function(d) { return d.MESS_DATUM; }));
     
     svg.select(".detailX")
@@ -715,7 +719,9 @@ function loadWeatherDetailGraph(key, data) {
         .call(xAxisD);
 
     yD.domain([0, d3.max(data, function(d) { return d.RSK; })]);
-          
+    svg.select(".detailY")
+        .transition()
+        .call(yAxisD);
     // define the line
     var valueline = d3.line()
         .x(function(d) { return xD(d.MESS_DATUM); })
@@ -735,7 +741,7 @@ function loadWeatherDetailGraph(key, data) {
                 .attr("dy", ".15em")
                 .attr("transform", "rotate(-90)"); 
 
-            svg2.select(".y.axis") // change the y axis
+            svg2.select(".detailY") // change the y axis
             .duration(150)
             .call(yAxisD)
 
